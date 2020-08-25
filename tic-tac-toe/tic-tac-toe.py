@@ -35,9 +35,18 @@ def output_board(b, winner):
 
 def check_winner(board):
     # Implement this function to determine who won, X, O, or Draw
-
-    return "Not implemented yet"
-
+    for player in ("X", "O"):
+        for horizontal in board:
+            if horizontal.count(player) == 3:
+                return player
+        for vertical in zip(*board):
+            if vertical.count(player) == 3:
+                return player
+        if (board[0][0], board[1][1], board[2][2]).count(player) == 3:
+            return player
+        if (board[0][2], board[1][1], board[2][0]).count(player) == 3:
+            return player
+    return "Draw"
 
 # Test cases
 output_board(board1, check_winner(board1))  # Should be X wins
