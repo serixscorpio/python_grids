@@ -23,9 +23,35 @@ def find(grid, ch):
     for y in range(height):
         for x in range(width):
             if grid[y][x] == ch:
-                return (x,y)
+                return (y,x)
 
     return None
+
+def adjacent(grid, nth, step, next_steps):
+    for y, x in [(-1,0), (0, 1), (1,0), (0, -1)]:
+        if grid[step[0]+y][step[1]+x] == " ":
+            grid[step[0]+y][step[1]+x] = nth
+            next_steps.append((step[0]+y, step[1]+x))
+        if grid[step[0]+y][step[1]+x] == "E":
+            next_steps.append((step[0]+y, step[1]+x))
+            return
+
+def figure_out_next_steps(grid, nth, steps):
+    next_steps = []
+    for step in steps:
+        adjacent(grid, nth, step, next_steps)
+    return next_steps
+
+def explore(grid, nth, steps, end):
+    next_steps = figure_out_next_steps(grid, nth, steps)
+    # logic to figure out current_steps_list
+    if len(next_steps) == 0:
+        # exploration finished
+        return False
+    if end in next_steps:
+        # optionally run path retrieval logic
+        return True
+    return explore(grid, nth+1, next_steps, end)
 
 # Find a solution.
 # Two options, return true/false if you find a solution
@@ -33,7 +59,7 @@ def find(grid, ch):
 #               you can display the path.
 def solve(grid, start, end,): # Add your parameters as needed    
     # Compute any path from start to end
-    return True
+    return explore(grid, 1, [start], end)
 
 if __name__ == "__main__":
     # Allow for maze's to be passed in on the command line:
@@ -49,6 +75,7 @@ if __name__ == "__main__":
     end = find(grid, "E")
     solution = solve(grid, start, end)
 
+    print_grid(grid)
     if solution:
         print ("Found solution!")
     else: 
