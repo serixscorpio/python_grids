@@ -27,7 +27,7 @@ def find(grid, ch):
 
     return None
 
-def mark_next_steps(grid, nth, step, next_steps):
+def mark_next_steps(grid, step, next_steps):
     for y, x in [(-1,0), (0, 1), (1,0), (0, -1)]:
         if grid[step[0]+y][step[1]+x] == " ":
             grid[step[0]+y][step[1]+x] = step
@@ -37,27 +37,25 @@ def mark_next_steps(grid, nth, step, next_steps):
             next_steps.append((step[0]+y, step[1]+x))
             return
 
-def figure_out_next_steps(grid, nth, steps):
+def possible_next_steps(grid, steps):
     next_steps = []
     for step in steps:
-        mark_next_steps(grid, nth, step, next_steps)
+        mark_next_steps(grid, step, next_steps)
     return next_steps
 
-def explore(grid, nth, steps, end):
-    next_steps = figure_out_next_steps(grid, nth, steps)
-    # logic to figure out current_steps_list
+def explore(grid, steps, end):
+    next_steps = possible_next_steps(grid, steps)
     if len(next_steps) == 0:
         # exploration finished
         return False
     if end in next_steps:
-        # optionally run path retrieval logic
         return True
-    return explore(grid, nth+1, next_steps, end)
+    return explore(grid, next_steps, end)
 
 def fill_path(solution_grid, output_grid, start, end):
     backtrack_step = solution_grid[end[0]][end[1]]
     if backtrack_step == start:
-        # done filling path
+        # done filling path into output_grid
         return
     output_grid[backtrack_step[0]][backtrack_step[1]] = "."
     fill_path(solution_grid, output_grid, start, backtrack_step)
@@ -68,7 +66,7 @@ def fill_path(solution_grid, output_grid, start, end):
 #               you can display the path.
 def solve(grid, start, end,): # Add your parameters as needed    
     # Compute any path from start to end
-    return explore(grid, 1, [start], end)
+    return explore(grid, [start], end)
 
 if __name__ == "__main__":
     # Allow for maze's to be passed in on the command line:
@@ -84,7 +82,6 @@ if __name__ == "__main__":
     end = find(grid, "E")
     solution = solve(grid, start, end)
 
-    # print_grid(grid)
     if solution:
         print ("Found solution!")
         output_grid = load_grid(maze)
