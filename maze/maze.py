@@ -27,19 +27,20 @@ def find(grid, ch):
 
     return None
 
-def adjacent(grid, nth, step, next_steps):
+def mark_next_steps(grid, nth, step, next_steps):
     for y, x in [(-1,0), (0, 1), (1,0), (0, -1)]:
         if grid[step[0]+y][step[1]+x] == " ":
-            grid[step[0]+y][step[1]+x] = nth
+            grid[step[0]+y][step[1]+x] = step
             next_steps.append((step[0]+y, step[1]+x))
         if grid[step[0]+y][step[1]+x] == "E":
+            grid[step[0]+y][step[1]+x] = step
             next_steps.append((step[0]+y, step[1]+x))
             return
 
 def figure_out_next_steps(grid, nth, steps):
     next_steps = []
     for step in steps:
-        adjacent(grid, nth, step, next_steps)
+        mark_next_steps(grid, nth, step, next_steps)
     return next_steps
 
 def explore(grid, nth, steps, end):
@@ -52,6 +53,14 @@ def explore(grid, nth, steps, end):
         # optionally run path retrieval logic
         return True
     return explore(grid, nth+1, next_steps, end)
+
+def fill_path(solution_grid, output_grid, start, end):
+    backtrack_step = solution_grid[end[0]][end[1]]
+    if backtrack_step == start:
+        # done filling path
+        return
+    output_grid[backtrack_step[0]][backtrack_step[1]] = "."
+    fill_path(solution_grid, output_grid, start, backtrack_step)
 
 # Find a solution.
 # Two options, return true/false if you find a solution
@@ -75,9 +84,12 @@ if __name__ == "__main__":
     end = find(grid, "E")
     solution = solve(grid, start, end)
 
-    print_grid(grid)
+    # print_grid(grid)
     if solution:
         print ("Found solution!")
+        output_grid = load_grid(maze)
+        fill_path(grid, output_grid, start, end)
+        print_grid(output_grid)
     else: 
         print ("No solution!")
 
